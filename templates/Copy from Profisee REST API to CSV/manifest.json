@@ -21,7 +21,7 @@
 			}
 		}
 	},
-	"documentation": "https://github.com/brianbarnett316/azuredatafactory/blob/master/documentation/Copy%20from%20Profisee%20REST%20API%20to%20CSV.md",
+	"documentation": "https://github.com/profiseedev/azuredatafactory/blob/master/documentation/Copy%20from%20Profisee%20REST%20API%20to%20CSV.md",
 	"author": "Profisee",
 	"annotations": [
 		"ADLS",
