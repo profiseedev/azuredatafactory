@@ -18,7 +18,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Copy from Profisee REST API to CSV')]",
+			"name": "[concat(parameters('factoryName'), '/Copy from Profisee REST API to CSV_copy1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -89,12 +89,8 @@
 								"referenceName": "OutputBlobCsv",
 								"type": "DatasetReference",
 								"parameters": {
-									"Container": {
-										"value": "@variables('OutputContainer')",
-										"type": "Expression"
-									},
-									"Directory": {
-										"value": "@variables('EntityName')",
+									"FolderName": {
+										"value": "@concat(variables('OutputContainer'), '/', variables('EntityName'))",
 										"type": "Expression"
 									},
 									"FileName": {
@@ -166,7 +162,7 @@
 				"type": "RestResource",
 				"typeProperties": {
 					"relativeUrl": {
-						"value": "@concat('members/',\ndataset().entityId, \n'/?pageSize=', string(dataset().pageSize),\n'&attributes=', dataset().attributes,\n'&filter=', dataset().filter,\n'&orderBy=', dataset().orderBy,\n'&dbaFormat=', string(dataset().dbaFormat)\n)",
+						"value": "@concat('members/',\ndataset().entityId, \n'/?pageSize=', string(dataset().pageSize),\n'&attributes=', dataset().attributes,\n'&filter=', dataset().filter,\n'&orderBy=', dataset().orderBy,\n'&codes=', dataset().codes,\n'&dbaFormat=', string(dataset().dbaFormat)\n)",
 						"type": "Expression"
 					}
 				},
@@ -185,10 +181,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"Container": {
-						"type": "string"
-					},
-					"Directory": {
+					"FolderName": {
 						"type": "string"
 					},
 					"FileName": {
@@ -204,12 +197,8 @@
 							"value": "@dataset().FileName",
 							"type": "Expression"
 						},
-						"folderPath": {
-							"value": "@dataset().Directory",
-							"type": "Expression"
-						},
 						"fileSystem": {
-							"value": "@dataset().Container",
+							"value": "@dataset().FolderName",
 							"type": "Expression"
 						}
 					},

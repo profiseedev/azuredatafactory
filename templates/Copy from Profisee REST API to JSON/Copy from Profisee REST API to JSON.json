@@ -18,14 +18,14 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Copy from Profisee REST API to JSON')]",
+			"name": "[concat(parameters('factoryName'), '/Copy from Profisee REST API to JSON_copy1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
 						"name": "Copy from Profisee REST API to JSON",
-						"description": "Copy records from Profisee via the REST API to ADLS Gen2 in JSON format.",
+						"description": "Copy records from Profisee via the Profisee REST API to ADLS Gen2 in JSON format.",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -70,7 +70,7 @@
 										"value": "@variables('EntityName')",
 										"type": "Expression"
 									},
-									"pageSize": 1000,
+									"pageSize": 100,
 									"attributes": " ",
 									"filter": " ",
 									"orderBy": " ",
@@ -84,12 +84,8 @@
 								"referenceName": "OutputBlobJson",
 								"type": "DatasetReference",
 								"parameters": {
-									"Container": {
-										"value": "@variables('OutputContainer')",
-										"type": "Expression"
-									},
-									"Directory": {
-										"value": "@variables('EntityName')",
+									"FolderName": {
+										"value": "@concat(variables('OutputContainer'), '/', variables('EntityName'))",
 										"type": "Expression"
 									},
 									"FileName": {
@@ -161,7 +157,7 @@
 				"type": "RestResource",
 				"typeProperties": {
 					"relativeUrl": {
-						"value": "@concat('members/',\ndataset().entityId, \n'/?pageSize=', string(dataset().pageSize),\n'&attributes=', dataset().attributes,\n'&filter=', dataset().filter,\n'&orderBy=', dataset().orderBy,\n'&dbaFormat=', string(dataset().dbaFormat)\n)",
+						"value": "@concat('members/',\ndataset().entityId, \n'/?pageSize=', string(dataset().pageSize),\n'&attributes=', dataset().attributes,\n'&filter=', dataset().filter,\n'&orderBy=', dataset().orderBy,\n'&codes=', dataset().codes,\n'&dbaFormat=', string(dataset().dbaFormat)\n)",
 						"type": "Expression"
 					}
 				},
@@ -180,10 +176,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"Container": {
-						"type": "string"
-					},
-					"Directory": {
+					"FolderName": {
 						"type": "string"
 					},
 					"FileName": {
@@ -199,16 +192,13 @@
 							"value": "@dataset().FileName",
 							"type": "Expression"
 						},
-						"folderPath": {
-							"value": "@dataset().Directory",
-							"type": "Expression"
-						},
 						"fileSystem": {
-							"value": "@dataset().Container",
+							"value": "@dataset().FolderName",
 							"type": "Expression"
 						}
 					}
-				}
+				},
+				"schema": {}
 			},
 			"dependsOn": []
 		}

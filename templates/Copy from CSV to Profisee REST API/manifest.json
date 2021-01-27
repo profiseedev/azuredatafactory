@@ -9,7 +9,7 @@
 	],
 	"requires": {
 		"linkedservices": {
-			"BlobStorageGen": {
+			"BlobStorageGen2": {
 				"supportTypes": [
 					"AzureBlobFS"
 				]

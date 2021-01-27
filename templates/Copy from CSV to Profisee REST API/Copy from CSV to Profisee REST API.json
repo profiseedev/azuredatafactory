@@ -62,7 +62,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "InputBlobCsv1",
+								"referenceName": "InputBlobCsv",
 								"type": "DatasetReference",
 								"parameters": {
 									"FolderName": {
@@ -78,7 +78,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "ProfiseeRESTAPI_Members_Update1",
+								"referenceName": "ProfiseeRESTAPI_Members_Update",
 								"type": "DatasetReference",
 								"parameters": {
 									"entityId": {
@@ -103,12 +103,12 @@
 				"lastPublishTime": "2020-09-25T15:29:08Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/InputBlobCsv1')]",
-				"[concat(variables('factoryId'), '/datasets/ProfiseeRESTAPI_Members_Update1')]"
+				"[concat(variables('factoryId'), '/datasets/InputBlobCsv')]",
+				"[concat(variables('factoryId'), '/datasets/ProfiseeRESTAPI_Members_Update')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/InputBlobCsv1')]",
+			"name": "[concat(parameters('factoryName'), '/InputBlobCsv')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -149,7 +149,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ProfiseeRESTAPI_Members_Update1')]",
+			"name": "[concat(parameters('factoryName'), '/ProfiseeRESTAPI_Members_Update')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
