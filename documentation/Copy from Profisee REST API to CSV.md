@@ -2,21 +2,38 @@ Copy from Profisee REST API to CSV Format
 =========================================
 
 This article describes a solution template that you can use to copy
-records from Profisee REST API to Azure Data Lake Storage Gen2 CSV
-storage.
+records from Profisee REST API to Azure Data Lake Storage Gen2 storage,
+in CSV format.
 
 About this solution template
 ----------------------------
 
 This template retrieves records from Profisee REST API. It then copies
-the records, in CSV format, to a file in the Sink container. When the
-pipeline created by the template is run, it will create a folder for the
-entity and copy the file to that folder. The file name is composed of
-the entity name and date/time in UTC with the .csv extension.
+the records, in CSV format, to a file in an output container. The
+template is designed to work with a folder structure consisting of
+folders named for each entity within the input container. Create a
+folder for each entity you wish to integrate with. CSV files for an
+entity will get created to the profisee-output\\&lt;entity&gt; folder.
+
+When the pipeline created by the template is run, it will create a
+folder for the entity, if it doesn’t exists, and copy the file to that
+folder. The file name is composed of the entity name and date/time in
+UTC with the .csv extension.
+
+For example:
+
+-   profisee-output
+
+    -   account
+
+    -   customer
+
+    -   product
 
 <img src="./media/copyfrom_restapi_to_csv_1.png" style="width:3.80106in;height:2.44509in" />
 
-**How to use this solution template**
+How to use this solution template
+---------------------------------
 
 1.  Go to the **Copy from Profisee REST API to CSV** template.
 
@@ -25,7 +42,7 @@ the entity name and date/time in UTC with the .csv extension.
 1.  Create a **New** or use an existing connection to the source
     Profisee REST API.
 
-> <img src="./media/copyfrom_restapi_to_csv_3.png" style="width:6.5in;height:3.62014in" />
+> <img src="./media/copyfrom_restapi_to_csv_3.png" style="width:4.376in;height:2.78549in" />
 
 1.  Follow these steps if you need to create a new REST linked service.
 
@@ -64,27 +81,112 @@ the entity name and date/time in UTC with the .csv extension.
 > You should also see the following template validation output.
 >
 > <img src="./media/copyfrom_restapi_to_csv_7.png" style="width:2.44172in;height:0.57049in" />
->
-> There are three items needed for the pipeline, one of them are
-> mentioned above.
 
-1.  **EntityName:** The entity you are copying records for. This is
-    entered in the pipeline Variables tab.
+Pipeline
+--------
 
-> <img src="./media/copyfrom_restapi_to_csv_8.png" style="width:3.79968in;height:1.30675in" />
+### Variables
 
-1.  **Container:** The output container where you are copying the file
-    to. This is entered in the pipeline Variables tab. It defaults to
-    “profisee-output”. You can update to another name based on your
-    environment.
+1.  **OutputContainer:** The output container where you are copying the
+    > file to. It defaults to “profisee-output”. You can update to
+    > another name based on your environment.
 
-> <img src="./media/copyfrom_restapi_to_csv_9.png" style="width:3.91411in;height:1.31516in" />
+2.  **EntityId:** The entity you are copying records for. Note, the
+    > entityId can be either the entity’s Name, UID, or InternalId
+    > value.
+
+> <img src="./media/copyfrom_restapi_to_csv_8.png" style="width:4.04in;height:1.39674in" />
+
+Copy Activity
+-------------
+
+### Source
+
+1.  Dataset properties:
+
+    1.  entityId: Uses the EntityId variable value.
+
+2.  pageSize - The page size to get.  Defaults to 1000 if not supplied.
+
+3.  filter - A filter to restrict the members returned.
+
+    1.  \[&lt;attribute name&gt;\] &lt;operator&gt; &lt;value&gt;.
+
+        -   Example: \[Color\] eq ‘BLU’.
+
+    2.  The filter can include multi-level attributes (MLAs).
+
+        -   Example: \[ProductSubCategory\]/\[ProductCategory\] eq '1'.
+
+    3.  You can group attributes together using parenthesis and ANDs and
+        > ORs.
+
+4.  attributes - A comma separated list of entity attribute names to
+    > return.  The list can include multi-level attributes (MLAs). If
+    > blank, all attributes are returned. Note: the attribute list
+    > determines the result properties you will see in the **Mapping**
+    > tab.
+
+    1.  MLAs are supported, using the ‘/’ to separate each part of the
+        > MLA path
+
+    2.  Example: \[Color\],\[Class\],\[ProductSubCategory\],\[SellStartDate\],\[SellEndDate\],\[Weight\],\[ProductSubCategory\]/\[ProductCategory\]/\[ProductGroup\]
+
+5.  orderBy - A comma separated list of entity attribute names and
+    > direction to order the response
+
+    1.  \[&lt;attribute name&gt;\] or \[&lt;attribute name&gt;\] asc -
+        > sorts attribute in ascending order
+
+    2.  \[&lt;attribute name&gt;\] desc - sorts attribute in descending
+        > order
+
+    3.  Example: \[ProductSubCategory\], \[SellStartDate\] desc
+
+6.  dbaFormat - The domain-based attribute (DBA) format to return.
+    > Provides an option to indicate how to return the DBA's Code and
+    > Name.  Note: a DBA is an attribute that points to, or references,
+    > another entity, called a domain entity. 
+
+    1.  Code only (default) - Only return the code value.
+
+        -   Example: 
+
+            -   "Source System": "SF",
+
+    2.  Code and Name simple properties.  The name property is returned
+        > as DBA.Name.
+
+        -   Example: 
+
+            -   "Source System": "SF",
+
+            -   "Source System.Name": "Salesforce",
+
+7.  codes – A comma separated list of member codes to return. 
+
+> <img src="./media/copyfrom_restapi_to_csv_9.png" style="width:4.624in;height:2.12279in" />
 
 1.  **x-api-key:** The Profisee API key, which is the Client Id for the
     user account you are using to connect to the Profisee API. This is
     entered in the Source tab.
 
 > <img src="./media/copyfrom_restapi_to_csv_10.png" style="width:3.25767in;height:2.71245in" />
+
+### Sink
+
+1.  Dataset properties
+
+    1.  FolderName – A concatenation of the OutputContainer and the
+        EntityId.
+
+    2.  FileName – A concatenation of the EntityId and a timestamp.
+
+### <img src="./media/copyfrom_restapi_to_csv_11.png" style="width:4.98747in;height:1.76in" />
+
+### 
+
+### Mapping
 
 1.  Select **Mapping** tab to map the records result properties to the
     corresponding CSV column.
@@ -93,32 +195,38 @@ the entity name and date/time in UTC with the .csv extension.
 > confirm the value of the pipeline parameter for the EntityName. Click
 > **OK**.
 >
-> <img src="./media/copyfrom_restapi_to_csv_11.png" style="width:3.19951in;height:2.28221in" />
+> <img src="./media/copyfrom_restapi_to_csv_12.png" style="width:3.19951in;height:2.28221in" />
 >
 > After a couple of seconds, you will see a list of mapping fields
 > listed, as shown in the following example.
 >
-> <img src="./media/copyfrom_restapi_to_csv_12.png" style="width:6.55347in;height:4.51181in" />
+> <img src="./media/copyfrom_restapi_to_csv_13.png" style="width:6.55347in;height:4.51181in" />
 >
 > Next, select **data** from the **Collection reference** drop down
 > list. The **data** property is the array of records.
 >
-> <img src="./media/copyfrom_restapi_to_csv_13.png" style="width:3.70779in;height:0.45753in" />
+> <img src="./media/copyfrom_restapi_to_csv_14.png" style="width:3.70779in;height:0.45753in" />
 >
 > Unselect the Include checkboxes for the pageNbr, pageSize,
 > resultCount, totalPages, totalRecords, and nextPage properties as we
 > do not want to copy them to the file.
 >
-> <img src="./media/copyfrom_restapi_to_csv_14.png" style="width:5.29221in;height:1.43161in" />
+> <img src="./media/copyfrom_restapi_to_csv_15.png" style="width:5.29221in;height:1.43161in" />
 >
 > After selecting the data collection reference, you need to select the
 > Type for each field you want to copy.
 >
-> <img src="./media/copyfrom_restapi_to_csv_15.png" style="width:6.5in;height:1.51042in" />
+> <img src="./media/copyfrom_restapi_to_csv_16.png" style="width:6.5in;height:1.51042in" />
 
-1.  Once you are finished with all your changes, click Publish All.
+Publish
+-------
 
-> <img src="./media/copyfrom_restapi_to_csv_16.png" style="width:1.36994in;height:0.29043in" />
+> Once you are finished with all your changes, click Publish All.
+>
+> <img src="./media/copyfrom_restapi_to_csv_17.png" style="width:1.36994in;height:0.29043in" />
+
+Triggering
+----------
 
 1.  To run the pipeline now, select **Add Trigger** and select **Trigger
     now**. Press **OK** at the Pipeline run prompt.
@@ -129,100 +237,12 @@ the entity name and date/time in UTC with the .csv extension.
 3.  When the pipeline run completes successfully, you would see results
     like the following example:
 
-> <img src="./media/copyfrom_restapi_to_csv_17.png" style="width:5.81595in;height:1.1023in" />
+> <img src="./media/copyfrom_restapi_to_csv_18.png" style="width:5.81595in;height:1.1023in" />
 
 1.  You should also see the output file in the Container and Directory
     you entered.
 
-> <img src="./media/copyfrom_restapi_to_csv_18.png" style="width:2.58282in;height:1.42087in" />
-
-Source parameters
------------------
-
-> You can customize the records get API query with the following
-> parameters.
->
-> <img src="./media/copyfrom_restapi_to_csv_19.png" style="width:4.60123in;height:2.22294in" />
-
--   pageSize - The page size to get.  Defaults to 1000 if not supplied.
-
--   filter - A filter to restrict the members returned.
-
-    -   \[&lt;attribute name&gt;\] &lt;operator&gt; &lt;value&gt;.
-
-        -   Example: \[Color\] eq ‘BLU’.
-
-    -   The filter can include multi-level attributes (MLAs).
-
-        -   Example: \[ProductSubCategory\]/\[ProductCategory\] eq '1'.
-
-    -   You can group attributes together using parenthesis and ANDs and
-        ORs.
-
-    -   You can also filter on Audit Info columns.  Use the following
-        property names:
-
-        -   created On (datetime) - datetime the record was created, in
-            UTC
-
-        -   created By (string) - user that created the record
-
-        -   changed On (datetime)) - datetime the record was last
-            changed, in UTC
-
-        -   changed By (string) - user that last changed the record
-
--   attributes - A comma separated list of entity attribute names to
-    return.  The list can include multi-level attributes (MLAs). If
-    blank, all attributes are returned. Note: the attribute list
-    determines the result properties you will see in the **Mapping**
-    tab.
-
-    -   MLAs are supported, using the ‘/’ to separate each part of the
-        MLA path
-
-    -   Example: \[Color\],\[Class\],\[ProductSubCategory\],\[SellStartDate\],\[SellEndDate\],\[Weight\],\[ProductSubCategory\]/\[ProductCategory\]/\[ProductGroup\]
-
--   orderBy - A comma separated list of entity attribute names and
-    direction to order the response
-
-    -   \[&lt;attribute name&gt;\] or \[&lt;attribute name&gt;\] asc -
-        sorts attribute in ascending order
-
-    -   \[&lt;attribute name&gt;\] desc - sorts attribute in descending
-        order
-
-    -   Example: \[ProductSubCategory\], \[SellStartDate\] desc
-
--   dbaFormat - The domain-based attribute (DBA) format to return.
-    Provides an option to indicate how to return the DBA's Code and
-    Name.  Note: a DBA is an attribute that points to, or references,
-    another entity, called a domain entity. 
-
-    -   Code only (default) - Only return the code value.
-
-        -   Example: 
-
-            -   "Source System": "SF",
-
-    -   Code and Name simple properties.  The name property is returned
-        as DBA.Name.
-
-        -   Example: 
-
-            -   "Source System": "SF",
-
-            -   "Source System.Name": "Salesforce",
-
--   codes – A comma separated list of member codes to return. 
-
-Sink parameters
----------------
-
-> You can customize the directory and file name by changing the template
-> values for the following parameters.
->
-> <img src="./media/copyfrom_restapi_to_csv_20.png" style="width:4.41173in;height:1.52761in" />
+> <img src="./media/copyfrom_restapi_to_csv_19.png" style="width:2.58282in;height:1.42087in" />
 
 Next steps
 ----------
