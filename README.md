@@ -12,4 +12,4 @@ This repository contains all the Profisee Azure Data Factory (ADF) templates and
 
 ## documentation
 
-All the Profisee ADF template documentation.
+[Home](https://github.com/profiseedev/azuredatafactory/tree/master/documentation) All the Profisee ADF template documentation.
