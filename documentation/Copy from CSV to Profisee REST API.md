@@ -74,7 +74,8 @@ How to use this solution template
 
 > <img src="./media/copyfrom_csv_to_restapi_6.png" style="width:4.66462in;height:3.032in" />
 >
-> You should also see the following template validation output.
+> You should also see the following template validation output. We will
+> correct that below.
 >
 > <img src="./media/copyfrom_csv_to_restapi_7.png" style="width:3.02985in;height:0.64356in" />
 
@@ -83,7 +84,7 @@ Pipeline
 
 ### Parameters
 
-1.  The FileFolder within the AdlsGen2BlobCsv container.
+1.  The FileFolder within the AdlsGen2Blob container.
 
 2.  The FileName of the file containing the records in CSV format which
     the Profisee REST Update API expects. Must end in .CSV file
@@ -102,7 +103,7 @@ Copy Activity
 1.  The Source dataset properties, FolderName and FileName, are set from
     the two pipeline parameters mentioned above.
 
-> <img src="./media/copyfrom_csv_to_restapi_9.png" style="width:4.11043in;height:1.77328in" />
+> <img src="./media/copyfrom_csv_to_restapi_9.png" style="width:4.46906in;height:1.928in" />
 
 ### Sink
 
@@ -128,8 +129,8 @@ Copy Activity
 ### Mapping
 
 If you are copying all the fields in the file, no mapping is required.
-You would only need to provide mappings if you wish to only copy a
-subset of the fields in the file.
+You will only need to provide mappings if you wish to only copy a subset
+of the fields in the file.
 
 Trigger
 -------

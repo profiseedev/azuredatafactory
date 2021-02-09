@@ -78,7 +78,8 @@ How to use this solution template
 
 > <img src="./media/copyfrom_restapi_to_csv_6.png" style="width:3.69939in;height:2.41883in" />
 >
-> You should also see the following template validation output.
+> You should also see the following template validation output. We will
+> correct that below.
 >
 > <img src="./media/copyfrom_restapi_to_csv_7.png" style="width:2.44172in;height:0.57049in" />
 
@@ -165,11 +166,17 @@ Copy Activity
 
 7.  codes – A comma separated list of member codes to return. 
 
+8.  You can find more information on these parameters on the Profisee
+    > REST API Swagger page. You can find it at https://&lt;host
+    > name&gt;/Profisee/rest.
+
 > <img src="./media/copyfrom_restapi_to_csv_9.png" style="width:4.624in;height:2.12279in" />
 
 1.  **x-api-key:** The Profisee API key, which is the Client Id for the
-    user account you are using to connect to the Profisee API. This is
-    entered in the Source tab.
+    user account you are using to connect to the Profisee API. The
+    Client Id can be found in the FastApp Studio Accounts screen, within
+    the Accounts and Teams admin area. This is entered in the Source
+    tab.
 
 > <img src="./media/copyfrom_restapi_to_csv_10.png" style="width:3.25767in;height:2.71245in" />
 
@@ -192,7 +199,7 @@ Copy Activity
     corresponding CSV column.
 
 > First click the **Import Schemas** button. You will be prompted to
-> confirm the value of the pipeline parameter for the EntityName. Click
+> confirm the value of the pipeline variable for the EntityId. Click
 > **OK**.
 >
 > <img src="./media/copyfrom_restapi_to_csv_12.png" style="width:3.19951in;height:2.28221in" />
