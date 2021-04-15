@@ -47,20 +47,39 @@ How to use this solution template
     2.  Enter the following information for the REST linked service.
 
         1.  Name: Enter a unique name within your ADF.
-
         2.  Description: Enter an optional description.
-
         3.  Integration runtime: You can select the auto resolve option or
             create a custom integration runtime. Some linked services that
             ADF integrates with requires the ADF integration runtime be in
             the same region as the service. In this case you will need to
             create a custom integration runtime in the same region as that
             linked service.
-
         4.  Base URL: enter the base URL to your deployed Profisee REST API.
-
         5.  Authentication type: select **Anonymous**
-
+		6.  Add a new Auth header for the **X-API-Key**.  The Profisee API key, which is the Client Id for the user account you are using to connect to the Profisee API. The Client Id can be found in the FastApp Studio Accounts screen, within the Accounts and Teams admin area.  You have two options.
+			1.  Enter the API Key value directly into the Value field.  
+			2.  Store the API Key in Azure Key Vault.  Although there are more steps involved, this is the preferred, more secure option.  
+				1. Click in the value field then click **Add Azure Key Vault** to start the process to your store the value in Azure Key Vault.  
+				2. Select **+ New** to create a new Key Vault, or select an existing Key Vault to use. 
+				3. Your Key Vault will need an Access Policy allowing the Data Factory's managed identity access.
+				   1. If not done during the create new process, after selecting the Key Vault name, click on the **Grant Data Factory service managed identity access to your Azure Key Vault.** link.
+				   2. This will navigate to your key vault's Access Policies screen to add the necessary access policy.
+				      1. Secret permissions: Get
+					  2. Select principal: Click on **None selected**.  Search for the name of your Data Factory.  Click on it then click on **Select**.
+					  3. Click on **Add**
+					  4. Click on **Save** on the Access policies screen.
+				4. Enter the Secret name you are going to use (e.g. profisee-rest-gateway-api-key).
+				5. Navigate to your key vault to add the API Key as a secret. 
+				   1. Click on **Secrets** in the left nav panel.
+				   2. Click on **Generate/Import**.
+				   3. Leave **Upload options** set to **Manual**.
+				   4. Give your secret a name (e.g. profisee-rest-gateway-api-key).
+				   5. Enter the API Key value in the Value field.
+				   6. Click **Create**.
+				6. You may need to refresh your Data Factory in the browser to pick up the new Key Vault settings.
+				7. See [Store credential in Azure Key Vault](https://docs.microsoft.com/en-us/azure/data-factory/store-credentials-in-key-vault) for more information on the necessary steps.
+			3. Should you need to use different API Keys with differing permissions to records in Profisee, you will need to create a REST linked service for each API Key you need to use.  And if storing the API Key in Key Vault, create a secret for each API Key.  You could also use one REST linked service.  You would need to instead add the API Key header in each Copy Activity's Source or Sink.  However, you would not be able to store the value in Key Vault.
+	
             <img src="./media/copyfrom_csv_to_restapi_5.png" style="width:3.54601in;height:3.93413in" />
 
 4.  Select **Use this template**.
@@ -68,11 +87,7 @@ How to use this solution template
 5.  You will see a pipeline created as shown in the following example:
 
     <img src="./media/copyfrom_csv_to_restapi_6.png" style="width:4.66462in;height:3.032in" />
-
-    You should also see the following template validation output. We will correct that below.
-
-    <img src="./media/copyfrom_csv_to_restapi_7.png" style="width:3.02985in;height:0.64356in" />
-
+    
 Pipeline
 --------
 
@@ -107,12 +122,6 @@ Copy Activity
     <img src="./media/copyfrom_csv_to_restapi_10.png" style="width:4.568in;height:1.49436in" />
 
 2.  The **Request method** must be set to **PATCH**.
-
-3.  **x-api-key:** The Profisee API key, which is the Client Id for the
-    user account you are using to connect to the Profisee API. The
-    Client Id can be found in the FastApp Studio Accounts screen,
-    within the Accounts and Teams admin area. This is entered in the
-    Source tab.
 
     <img src="./media/copyfrom_csv_to_restapi_11.png" style="width:2.96792in;height:1.90184in" />
 
